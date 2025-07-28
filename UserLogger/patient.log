@@ -1,0 +1,54 @@
+Operation: BOOK, Patient: 2, Visit ID: 1, Timestamp: 1717917423688
+
+Operation: BOOK, Patient: 2, Visit ID: 2, Timestamp: 1717917456322
+
+Operation: BOOK, Patient: 3, Visit ID: 6, Timestamp: 1717917573711
+
+Operation: BOOK, Patient: 3, Visit ID: 9, Timestamp: 1717917682385
+
+Operation: BOOK, Patient: 3, Visit ID: 1, Timestamp: 1717917840584
+
+Operation: CANCEL, Patient: 3, Visit ID: 9, Timestamp: 1717918753886
+
+Operation: CANCEL, Patient: 2, Visit ID: 2, Timestamp: 1717919554904
+
+Operation: BOOK, Patient: 2, Visit ID: 2, Timestamp: 1717919574344
+
+Operation: CANCEL, Patient: 2, Visit ID: 2, Timestamp: 1717935924464
+
+Operation: BOOK, Patient: 2, Visit ID: 2, Timestamp: 1717937192896
+
+Operation: BOOK, Patient: 3, Visit ID: 20, Timestamp: 1718035223590
+
+Operation: BOOK, Patient: 4, Visit ID: 22, Timestamp: 1718668995540
+
+Operation: BOOK, Patient: 4, Visit ID: 23, Timestamp: 1718669172724
+
+Operation: AUCTION_BOOK, Patient: 3, Visit ID: 16, Timestamp: 1718985600041
+
+Operation: AUCTION_BOOK, Patient: 4, Visit ID: 16, Timestamp: 1718985600042
+
+Operation: AUCTION_BOOK, Patient: 4, Visit ID: 16, Timestamp: 1718985600043
+
+Operation: AUCTION_BOOK, Patient: 4, Visit ID: 16, Timestamp: 1718985600043
+
+Operation: AUCTION_BOOK, Patient: 4, Visit ID: 16, Timestamp: 1718985600044
+
+Operation: AUCTION_BOOK, Patient: 3, Visit ID: 16, Timestamp: 1718985600044
+
+Operation: AUCTION_BOOK, Patient: 4, Visit ID: 16, Timestamp: 1718985600045
+
+Operation: AUCTION_BOOK, Patient: 2, Visit ID: 16, Timestamp: 1718985600046
+
+Operation: AUCTION_BOOK, Patient: 2, Visit ID: 16, Timestamp: 1718985600047
+
+Operation: BOOK, Patient: patient1, Visit ID: 1, Timestamp: 1719219305153
+
+Operation: BOOK, Patient: patient1, Visit ID: 1, Timestamp: 1719901570401
+
+Operation: AUCTION_BOOK, Patient: patient5, Visit ID: 5, Timestamp: 1720108800060
+
+Operation: AUCTION_BOOK, Patient: patient3, Visit ID: 5, Timestamp: 1720108800066
+
+Operation: AUCTION_BOOK, Patient: patient2, Visit ID: 5, Timestamp: 1720108800067
+

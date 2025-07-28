@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>患者界面</title>
+    <link rel="stylesheet" href="styles/patient.css">
+</head>
+<body>
+<div class="container">
+    <div class="sidebar">
+        <h2>患者系统</h2>
+        <ul>
+            <li><button onclick="showSection('userInfo')">用户信息</button></li>
+            <li><button onclick="showSection('updateSelf')">修改个人信息</button></li>
+            <li><button onclick="showSection('filterVisits')">筛选出诊信息</button></li>
+            <li><button onclick="showSection('bookedVisits')">已挂号信息</button></li>
+            <li><button onclick="showSection('historyVisits')">查询历史挂号信息</button></li>
+            <li><button onclick="showSection('auctionVisits')">竞拍挂号</button></li>
+            <li><button class="btn-logout" onclick="logout()">退出登录</button></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div id="userInfo" class="section">
+            <h1>用户信息</h1>
+            <ul id="userInfoList"></ul>
+        </div>
+        <div id="updateSelf" class="section">
+            <h1>修改个人信息</h1>
+            <form id="updateSelfForm">
+                <div class="form-group">
+                    <label for="name">姓名</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="age">年龄</label>
+                    <input type="number" id="age" name="age" required>
+                </div>
+                <div class="form-group">
+                    <label for="gender">性别</label>
+                    <input type="text" id="gender" name="gender" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">住址</label>
+                    <input type="text" id="address" name="address" required>
+                </div>
+                <div class="form-group">
+                    <label for="contact">联系方式</label>
+                    <input type="text" id="contact" name="contact" required>
+                </div>
+                <div class="form-group">
+                    <label for="medicalRecord">病历</label>
+                    <input type="text" id="medicalRecord" name="medicalRecord" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">新密码</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn">更新</button>
+            </form>
+        </div>
+        <div id="filterVisits" class="section">
+            <h1>筛选出诊信息</h1>
+            <form id="filterVisitForm">
+                <div class="form-group">
+                    <label for="department">科室</label>
+                    <select id="department" name="department">
+                        <option value="全部">全部</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="doctorName">专家姓名</label>
+                    <select id="doctorName" name="doctorName">
+                        <option value="全部">全部</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">筛选</button>
+            </form>
+            <ul id="visitList"></ul>
+        </div>
+        <div id="bookedVisits" class="section">
+            <h1>已挂号信息</h1>
+            <ul id="bookedVisitList"></ul>
+        </div>
+        <div id="historyVisits" class="section">
+            <h1>查询历史挂号信息</h1>
+            <form id="historyVisitForm">
+                <div class="form-group">
+                    <label for="historyStartDate">开始日期</label>
+                    <input type="datetime-local" id="historyStartDate" name="historyStartDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="historyEndDate">结束日期</label>
+                    <input type="datetime-local" id="historyEndDate" name="historyEndDate" required>
+                </div>
+                <button type="submit" class="btn">查询</button>
+            </form>
+            <ul id="historyVisitList"></ul>
+        </div>
+        <div id="auctionVisits" class="section">
+            <h1>竞拍挂号</h1>
+            <ul id="auctionList"></ul>
+            <form id="bidForm" style="display: none;">
+                <input type="hidden" id="bidVisitId">
+                <div class="form-group">
+                    <label for="bidAmount">竞拍金额</label>
+                    <input type="number" id="bidAmount" name="bidAmount" required>
+                </div>
+                <button type="submit" class="btn">提交竞价</button>
+            </form>
+            <h3>我的竞价记录</h3>
+            <ul id="myBidsList"></ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("updateSelfForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const data = {
+            name: document.getElementById("name").value,
+            age: parseInt(document.getElementById("age").value),
+            gender: document.getElementById("gender").value,
+            address: document.getElementById("address").value,
+            contact: document.getElementById("contact").value,
+            medicalRecord: document.getElementById("medicalRecord").value,
+            password: document.getElementById("password").value
+        };
+        fetch("/api/users/update-self/patient", {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.ok) {
+                alert('个人信息更新成功');
+            } else {
+                alert('更新失败');
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+
+    document.getElementById("filterVisitForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        let department = document.getElementById("department").value;
+        let doctorName = document.getElementById("doctorName").value;
+
+        if (department === "全部") {
+            department = "";
+        }
+        if (doctorName === "全部") {
+            doctorName = "";
+        }
+
+        fetch(`/api/visits/patient?department=${department}&doctorName=${doctorName}`)
+            .then(response => response.json())
+            .then(data => {
+                const visitList = document.getElementById("visitList");
+                visitList.innerHTML = '';
+                if (data.length === 0) {
+                    alert('未查询到出诊信息');
+                } else {
+                    data.forEach(visit => {
+                        const li = document.createElement('li');
+                        li.textContent = `科室: ${visit.department}, 医生: ${visit.doctorName}, 出诊时间: ${visit.visitTime}, 可供挂号的数量: ${visit.availableSlots}`;
+                        const bookButton = document.createElement('button');
+                        bookButton.textContent = '挂号';
+                        bookButton.onclick = () => bookVisit(visit.id);
+                        li.appendChild(bookButton);
+                        visitList.appendChild(li);
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+
+    document.getElementById("historyVisitForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const startDate = document.getElementById("historyStartDate").value;
+        const endDate = document.getElementById("historyEndDate").value;
+
+        fetch(`/api/visits/history?startDate=${startDate}&endDate=${endDate}`)
+            .then(response => response.json())
+            .then(data => {
+                const historyVisitList = document.getElementById("historyVisitList");
+                historyVisitList.innerHTML = '';
+                if (data.length === 0) {
+                    alert('未查询到该时段的挂号信息');
+                } else {
+                    data.forEach(visit => {
+                        const li = document.createElement('li');
+                        li.textContent = `科室: ${visit.department}, 医生: ${visit.doctorName}, 出诊时间: ${visit.visitTime}`;
+                        historyVisitList.appendChild(li);
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+
+    function bookVisit(id) {
+        fetch(`/api/visits/book/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (response.ok) {
+                alert('预约成功');
+                window.location.href = `/pay.html?visitId=${id}`;
+                loadBookedVisits();  // 重新加载已挂号信息
+            } else {
+                response.text().then(message => {
+                    alert(`预约失败: ${message}`);
+                });
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function cancelVisit(id) {
+        fetch(`/api/visits/cancel/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (response.ok) {
+                alert('取消成功');
+                loadBookedVisits();  // 重新加载已挂号信息
+            } else {
+                response.text().then(message => {
+                    alert(`取消失败: ${message}`);
+                });
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function loadBookedVisits() {
+        fetch("/api/visits/booked")
+            .then(response => response.json())
+            .then(data => {
+                const bookedVisitList = document.getElementById("bookedVisitList");
+                bookedVisitList.innerHTML = '';
+                if (data.length === 0) {
+                    alert('未查询到已挂号信息');
+                } else {
+                    data.forEach(visit => {
+                        const li = document.createElement('li');
+                        li.textContent = `科室: ${visit.department}, 医生: ${visit.doctorName}, 出诊时间: ${visit.visitTime}`;
+                        const cancelButton = document.createElement('button');
+                        cancelButton.textContent = '取消预约';
+                        cancelButton.onclick = () => cancelVisit(visit.id);
+                        li.appendChild(cancelButton);
+                        bookedVisitList.appendChild(li);
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+
+    function loadDepartments() {
+        fetch("/api/visits/departments")
+            .then(response => response.json())
+            .then(data => {
+                const departmentSelect = document.getElementById("department");
+                data.forEach(department => {
+                    const option = document.createElement("option");
+                    option.value = department;
+                    option.text = department;
+                    departmentSelect.appendChild(option);
+                });
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+
+    function loadDoctors() {
+        fetch("/api/visits/doctors")
+            .then(response => response.json())
+            .then(data => {
+                const doctorSelect = document.getElementById("doctorName");
+                data.forEach(doctor => {
+                    const option = document.createElement("option");
+                    option.value = doctor;
+                    option.text = doctor;
+                    doctorSelect.appendChild(option);
+                });
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+
+    function loadAuctionVisits() {
+        fetch('/api/visits/available-auction')
+            .then(response => response.json())
+            .then(data => {
+                const auctionList = document.getElementById('auctionList');
+                auctionList.innerHTML = '';
+                data.forEach(visit => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>医生: ${visit.doctorName}</span>
+                        <span>科室: ${visit.department}</span>
+                        <span>出诊时间: ${visit.visitTime}</span>
+                        <span>可供挂号数量: ${visit.availableSlots}</span>
+                        <button onclick="selectVisit(${visit.id})">竞拍</button>
+                    `;
+                    auctionList.appendChild(li);
+                });
+            }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function selectVisit(visitId) {
+        document.getElementById('bidVisitId').value = visitId;
+        document.getElementById('bidForm').style.display = 'block';
+    }
+
+    document.getElementById("bidForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const visitId = document.getElementById('bidVisitId').value;
+        const bidAmount = document.getElementById('bidAmount').value;
+        fetch(`/api/bids/place?visitId=${visitId}&amount=${bidAmount}`, {
+            method: 'POST'
+        }).then(response => {
+            if (response.ok) {
+                alert('竞价提交成功');
+                loadMyBids();
+            } else {
+                response.text().then(message => {
+                    alert(`竞价提交失败: ${message}`);
+                });
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+
+    function loadMyBids() {
+        fetch('/api/bids/patient-bids')
+            .then(response => response.json())
+            .then(data => {
+                const myBidsList = document.getElementById('myBidsList');
+                myBidsList.innerHTML = '';
+                data.forEach(bid => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>挂号ID: ${bid.visitId}</span>
+                        <span>竞拍金额: ${bid.bidAmount}</span>
+                        <span>竞拍时间: ${bid.bidTime}</span>
+                    `;
+                    myBidsList.appendChild(li);
+                });
+            }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function loadUserInfo() {
+        fetch('/api/users/current')
+            .then(response => response.json())
+            .then(data => {
+                const userInfoList = document.getElementById('userInfoList');
+                userInfoList.innerHTML = `
+                    <li>姓名: ${data.name}</li>
+                    <li>身份证号: ${data.idCard}</li>
+                    <li>年龄: ${data.age}</li>
+                    <li>性别: ${data.gender}</li>
+                    <li>住址: ${data.address}</li>
+                    <li>联系方式: ${data.contact}</li>
+                    <li>病历: ${data.medicalRecord}</li>
+                    <li>信用分: ${data.creditScore}</li>
+                    <li>角色：患者</li>
+                `;
+            }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function showSection(sectionId) {
+        document.querySelectorAll('.section').forEach(section => {
+            section.style.display = 'none';
+        });
+        document.getElementById(sectionId).style.display = 'block';
+    }
+
+    function logout() {
+        window.location.href = 'login.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        showSection('userInfo'); // 默认显示用户信息
+        loadUserInfo();
+        loadBookedVisits();
+        loadDepartments();
+        loadDoctors();
+        loadAuctionVisits();
+        loadMyBids();
+    });
+</script>
+</body>
+</html>
+

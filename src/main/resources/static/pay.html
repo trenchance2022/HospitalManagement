@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>支付页面</title>
+  <link rel="stylesheet" href="styles/pay.css">
+</head>
+<body>
+<div class="container">
+  <h1>支付页面</h1>
+  <p id="visitInfo" class="visit-info"></p>
+  <button class="btn" onclick="pay()">支付</button>
+  <button class="btn btn-secondary" onclick="cancel()">取消</button>
+
+  <div class="recommendation-container">
+    <h2 class="recommendation-header">为你推荐的挂号信息</h2>
+    <ul id="recommendationList" class="recommendation-list"></ul>
+  </div>
+</div>
+
+<script>
+  function pay() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const visitId = urlParams.get('visitId');
+
+    fetch(`/api/visits/pay/${visitId}`, {
+      method: 'PUT'
+    }).then(response => {
+      if (response.ok) {
+        alert('支付成功');
+        window.location.href = '/patient.html';
+      } else {
+        response.text().then(message => {
+          alert(`支付失败: ${message}`);
+        });
+      }
+    }).catch((error) => {
+      console.error('Error:', error);
+    });
+  }
+
+  function loadVisitInfo() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const visitId = urlParams.get('visitId');
+
+    fetch(`/api/visits/${visitId}`)
+            .then(response => response.json())
+            .then(data => {
+              const visit = data.visit;
+              const hospital = data.hospital;
+              const visitInfo = document.getElementById('visitInfo');
+              visitInfo.textContent = `当前挂号信息: 医生: ${visit.doctorName}, 科室: ${visit.department}, 出诊时间: ${visit.visitTime}, 医院: ${hospital}`;
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+            });
+  }
+
+  function cancel() {
+    alert('支付取消');
+    window.location.href = '/patient.html';
+  }
+
+  function loadRecommendations() {
+    fetch('/api/visits/recommendations')
+            .then(response => response.json())
+            .then(data => {
+              const recommendationList = document.getElementById('recommendationList');
+              recommendationList.innerHTML = '';
+              data.forEach(rec => {
+                const visit = rec.visit;
+                const li = document.createElement('li');
+                li.classList.add('recommendation-item');
+                li.innerHTML = `
+            <span>医生: ${visit.doctorName}</span>
+            <span>科室: ${visit.department}</span>
+            <span>出诊时间: ${visit.visitTime}</span>
+            <span>医院: ${rec.hospital}</span>
+          `;
+                const bookButton = document.createElement('button');
+                bookButton.textContent = '挂号';
+                bookButton.classList.add('btn', 'btn-secondary');
+                bookButton.onclick = () => bookVisit(visit.id);
+                li.appendChild(bookButton);
+                recommendationList.appendChild(li);
+              });
+            }).catch((error) => {
+      console.error('Error:', error);
+    });
+  }
+
+  function bookVisit(id) {
+    fetch(`/api/visits/book/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(response => {
+      if (response.ok) {
+        alert('预约成功');
+        window.location.href = `/pay.html?visitId=${id}`;
+      } else {
+        response.text().then(message => {
+          alert(`预约失败: ${message}`);
+        });
+      }
+    }).catch((error) => {
+      console.error('Error:', error);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadVisitInfo();
+    loadRecommendations();
+  });
+</script>
+</body>
+</html>

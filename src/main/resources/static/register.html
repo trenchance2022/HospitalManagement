@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册</title>
+    <link rel="stylesheet" href="styles/register.css">
+</head>
+<body>
+<div class="container">
+    <h1>注册</h1>
+    <form id="registerForm">
+        <div class="form-group">
+            <label for="idCard">身份证号:</label>
+            <input type="text" id="idCard" name="idCard" required>
+        </div>
+        <div class="form-group">
+            <label for="name">姓名:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="username">用户名:</label>
+            <input type="text" id="username" name="username" required>
+            <span id="usernameError" class="error"></span>
+        </div>
+        <div class="form-group">
+            <label for="password">密码:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class="form-group">
+            <label for="role">角色:</label>
+            <select id="role" name="role">
+                <option value="patient">患者</option>
+                <option value="doctor">医生</option>
+                <option value="admin">管理员</option>
+            </select>
+        </div>
+        <div id="additionalFields"></div>
+        <button type="submit" class="btn">注册</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const role = document.getElementById("role").value;
+        updateAdditionalFields(role);
+    });
+
+    document.getElementById("role").addEventListener("change", function (event) {
+        const role = event.target.value;
+        updateAdditionalFields(role);
+    });
+
+    function updateAdditionalFields(role) {
+        const additionalFields = document.getElementById("additionalFields");
+        additionalFields.innerHTML = '';
+        if (role === 'doctor') {
+            additionalFields.innerHTML += '<div class="form-group"><label for="department">科室:</label><input type="text" id="department" name="department"></div>';
+            additionalFields.innerHTML += '<div class="form-group"><label for="title">职称:</label><input type="text" id="title" name="title"></div>';
+            additionalFields.innerHTML += '<div class="form-group"><label for="hospital">所在医院:</label><input type="text" id="hospital" name="hospital"></div>';
+            additionalFields.innerHTML += '<div class="form-group"><label for="specialty">专长:</label><input type="text" id="specialty" name="specialty"></div>';
+        }
+        if (role === 'patient' || role === 'doctor') {
+            additionalFields.innerHTML += '<div class="form-group"><label for="age">年龄:</label><input type="number" id="age" name="age"></div>';
+            additionalFields.innerHTML += '<div class="form-group"><label for="gender">性别:</label><input type="text" id="gender" name="gender"></div>';
+            additionalFields.innerHTML += '<div class="form-group"><label for="address">住址:</label><input type="text" id="address" name="address"></div>';
+            additionalFields.innerHTML += '<div class="form-group"><label for="contact">联系方式:</label><input type="text" id="contact" name="contact"></div>';
+        }
+        if (role === 'admin') {
+            additionalFields.innerHTML += '<div class="form-group"><label for="address">住址:</label><input type="text" id="address" name="address"></div>';
+            additionalFields.innerHTML += '<div class="form-group"><label for="contact">联系方式:</label><input type="text" id="contact" name="contact"></div>';
+        }
+    }
+
+    document.getElementById('username').addEventListener('blur', function () {
+        const username = document.getElementById('username').value;
+        fetch(`/api/users/check-username?username=${username}`)
+            .then(response => {
+                if (response.status === 409) {
+                    document.getElementById('usernameError').textContent = '用户名已存在';
+                } else {
+                    document.getElementById('usernameError').textContent = '';
+                }
+            });
+    });
+
+    document.getElementById("registerForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const usernameError = document.getElementById('usernameError').textContent;
+        if (usernameError !== '') {
+            alert('请更换用户名');
+            return;
+        }
+
+        const role = document.getElementById("role").value;
+        const data = {
+            idCard: document.getElementById("idCard").value,
+            name: document.getElementById("name").value,
+            username: document.getElementById("username").value,
+            password: document.getElementById("password").value,
+            status: 'PENDING'
+        };
+        if (role === 'doctor') {
+            data.department = document.getElementById("department").value;
+            data.title = document.getElementById("title").value;
+            data.hospital = document.getElementById("hospital").value;
+            data.specialty = document.getElementById("specialty").value;
+        }
+        if (role === 'patient' || role === 'doctor') {
+            data.age = parseInt(document.getElementById("age").value);
+            data.gender = document.getElementById("gender").value;
+            data.address = document.getElementById("address").value;
+            data.contact = document.getElementById("contact").value;
+        }
+        if (role === 'admin') {
+            data.address = document.getElementById("address").value;
+            data.contact = document.getElementById("contact").value;
+        }
+        const url = `/api/users/register/${role}`;
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                window.location.href = 'login.html';  // 注册成功后跳转到登录页面
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+</script>
+</body>
+</html>

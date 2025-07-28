@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理</title>
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body>
+<div class="container">
+    <div class="sidebar">
+        <h2>管理系统</h2>
+        <ul>
+            <li><button onclick="showSection('userInfo')">用户信息</button></li>
+            <li><button onclick="showSection('pendingUsers')">待审批用户</button></li>
+            <li><button onclick="showSection('pendingVisits')">待审批出诊信息</button></li>
+            <li><button onclick="showSection('pendingAuctionVisits')">待审批竞拍号源</button></li>
+            <li><button onclick="showSection('approvedUsers')">已审批用户</button></li>
+            <li><button onclick="showSection('updateSelf')">修改个人信息</button></li>
+            <li><button class="btn-logout" onclick="logout()">退出登录</button></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div id="userInfo" class="section">
+            <h1>用户信息</h1>
+            <ul id="userInfoList"></ul>
+        </div>
+        <div id="pendingUsers" class="section">
+            <h1>待审批用户</h1>
+            <h2>患者</h2>
+            <ul id="pendingPatients"></ul>
+            <h2>医生</h2>
+            <ul id="pendingDoctors"></ul>
+            <h2>管理员</h2>
+            <ul id="pendingAdmins"></ul>
+        </div>
+        <div id="pendingVisits" class="section">
+            <h1>待审批出诊信息</h1>
+            <ul id="pendingVisitsList"></ul>
+        </div>
+        <div id="pendingAuctionVisits" class="section">
+            <h1>待审批竞拍号源</h1>
+            <ul id="pendingAuctionVisitsList"></ul>
+        </div>
+        <div id="approvedUsers" class="section">
+            <h1>已审批用户</h1>
+            <h2>患者</h2>
+            <ul id="approvedPatients"></ul>
+            <h2>医生</h2>
+            <ul id="approvedDoctors"></ul>
+            <h2>管理员</h2>
+            <ul id="approvedAdmins"></ul>
+        </div>
+        <div id="updateSelf" class="section">
+            <h1>修改个人信息</h1>
+            <form id="updateSelfForm">
+                <div class="form-group">
+                    <label for="name">姓名</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">住址</label>
+                    <input type="text" id="address" name="address" required>
+                </div>
+                <div class="form-group">
+                    <label for="contact">联系方式</label>
+                    <input type="text" id="contact" name="contact" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">新密码</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn">更新</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 编辑表单 -->
+<div id="editForm" style="display: none;">
+    <h2>编辑用户信息</h2>
+    <form id="editUserForm">
+        <div class="form-group">
+            <label for="editName">姓名</label>
+            <input type="text" id="editName" name="name" required>
+        </div>
+        <div class="form-group" id="editAgeGroup" style="display: none;">
+            <label for="editAge">年龄</label>
+            <input type="number" id="editAge" name="age">
+        </div>
+        <div class="form-group" id="editGenderGroup" style="display: none;">
+            <label for="editGender">性别</label>
+            <input type="text" id="editGender" name="gender">
+        </div>
+        <div class="form-group">
+            <label for="editAddress">住址</label>
+            <input type="text" id="editAddress" name="address" required>
+        </div>
+        <div class="form-group">
+            <label for="editContact">联系方式</label>
+            <input type="text" id="editContact" name="contact" required>
+        </div>
+        <div class="form-group" id="editDepartmentGroup" style="display: none;">
+            <label for="editDepartment">科室</label>
+            <input type="text" id="editDepartment" name="department">
+        </div>
+        <div class="form-group" id="editTitleGroup" style="display: none;">
+            <label for="editTitle">职称</label>
+            <input type="text" id="editTitle" name="title">
+        </div>
+        <div class="form-group" id="editHospitalGroup" style="display: none;">
+            <label for="editHospital">所在医院</label>
+            <input type="text" id="editHospital" name="hospital">
+        </div>
+        <div class="form-group" id="editSpecialtyGroup" style="display: none;">
+            <label for="editSpecialty">专长</label>
+            <input type="text" id="editSpecialty" name="specialty">
+        </div>
+        <button type="button" class="btn" onClick="updateUser()">保存</button>
+        <button type="button" class="btn" style="background-color: #ff4d4d;" onClick="hideEditForm()">取消</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        showSection('userInfo');  // 默认显示用户信息部分
+
+        // 获取当前用户信息
+        fetch('/api/users/current')
+            .then(response => response.json())
+            .then(data => {
+                const userInfoList = document.getElementById('userInfoList');
+                userInfoList.innerHTML = `
+                    <li>姓名: ${data.name}</li>
+                    <li>身份证号: ${data.idCard}</li>
+                    <li>住址: ${data.address}</li>
+                    <li>联系方式: ${data.contact}</li>
+                    ${data.department ? `<li>科室: ${data.department}</li>` : ''}
+                    ${data.title ? `<li>职称: ${data.title}</li>` : ''}
+                    ${data.hospital ? `<li>所在医院: ${data.hospital}</li>` : ''}
+                    ${data.specialty ? `<li>专长: ${data.specialty}</li>` : ''}
+                    <li>角色: 管理员</li>
+                `;
+            }).catch(error => {
+            console.error('Error:', error);
+            alert('加载用户信息出错');
+        });
+
+
+
+        // 其他现有代码...
+    });
+
+    document.getElementById("updateSelfForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const data = {
+            name: document.getElementById("name").value,
+            address: document.getElementById("address").value,
+            contact: document.getElementById("contact").value,
+            password: document.getElementById("password").value
+        };
+        fetch("/api/users/update-self/admin", {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.ok) {
+                alert('个人信息更新成功');
+            } else {
+                alert('更新失败');
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+
+    let editUserId;
+    let editUserRole;
+
+    function showSection(sectionId) {
+        document.querySelectorAll('.section').forEach(section => {
+            section.style.display = 'none';
+        });
+        document.getElementById(sectionId).style.display = 'block';
+    }
+
+    function approveUser(role, id) {
+        fetch(`/api/users/approve/${role}/${id}`, {
+            method: 'PUT'
+        }).then(response => {
+            if (response.ok) {
+                alert('审批成功');
+                location.reload();
+            } else {
+                alert('审批失败');
+            }
+        });
+    }
+
+    function deleteUser(role, id) {
+        fetch(`/api/users/delete/${role}/${id}`, {
+            method: 'DELETE'
+        }).then(response => {
+            if (response.ok) {
+                alert('删除成功');
+                location.reload();
+            } else {
+                alert('删除失败');
+            }
+        });
+    }
+
+    function approveVisit(id) {
+        fetch(`/api/visits/approve/${id}`, {
+            method: 'PUT'
+        }).then(response => {
+            if (response.ok) {
+                alert('出诊信息审批成功');
+                location.reload();
+            } else {
+                alert('出诊信息审批失败');
+            }
+        });
+    }
+
+    function approveAuctionVisit(id) {
+        fetch(`/api/visits/approve-auction/${id}`, {
+            method: 'PUT'
+        }).then(response => {
+            if (response.ok) {
+                alert('竞拍号源审批成功');
+                location.reload();
+            } else {
+                alert('竞拍号源审批失败');
+            }
+        });
+    }
+
+    function loadPendingVisits() {
+        fetch("/api/visits/pending")
+            .then(response => response.json())
+            .then(data => {
+                const pendingVisitList = document.getElementById("pendingVisitsList");
+                data.forEach(visit => {
+                    const li = document.createElement('li');
+                    li.textContent = `科室: ${visit.department}, 医生: ${visit.doctorName}, 出诊时间: ${visit.visitTime}, 可供挂号的数量: ${visit.availableSlots}, 状态: ${visit.status}`;
+                    const approveButton = document.createElement('button');
+                    approveButton.textContent = '审批通过';
+                    approveButton.onclick = () => approveVisit(visit.id);
+                    li.appendChild(approveButton);
+                    pendingVisitList.appendChild(li);
+                });
+            }).catch(error => {
+            console.error('Error:', error);
+            alert('加载未审批出诊信息出错');
+        });
+    }
+
+    function loadPendingAuctionVisits() {
+        fetch("/api/visits/pending-auction")
+            .then(response => response.json())
+            .then(data => {
+                const pendingAuctionVisitList = document.getElementById("pendingAuctionVisitsList");
+                data.forEach(visit => {
+                    const li = document.createElement('li');
+                    li.textContent = `科室: ${visit.department}, 医生: ${visit.doctorName}, 出诊时间: ${visit.visitTime}, 可供挂号的数量: ${visit.availableSlots}, 状态: ${visit.status}`;
+                    const approveButton = document.createElement('button');
+                    approveButton.textContent = '审批通过';
+                    approveButton.onclick = () => approveAuctionVisit(visit.id);
+                    li.appendChild(approveButton);
+                    pendingAuctionVisitList.appendChild(li);
+                });
+            }).catch(error => {
+            console.error('Error:', error);
+            alert('加载未审批竞拍号源出错');
+        });
+    }
+
+    function editUser(role, id, name, age, gender, address, contact, department, title, hospital, specialty) {
+        editUserId = id;
+        editUserRole = role;
+        document.getElementById('editName').value = name;
+        document.getElementById('editAddress').value = address;
+        document.getElementById('editContact').value = contact;
+
+        if (role === 'doctor' || role === 'patient') {
+            document.getElementById('editAgeGroup').style.display = 'block';
+            document.getElementById('editAge').value = age;
+            document.getElementById('editGenderGroup').style.display = 'block';
+            document.getElementById('editGender').value = gender;
+        } else {
+            document.getElementById('editAgeGroup').style.display = 'none';
+            document.getElementById('editGenderGroup').style.display = 'none';
+        }
+
+        if (role === 'doctor') {
+            document.getElementById('editDepartmentGroup').style.display = 'block';
+            document.getElementById('editDepartment').value = department;
+            document.getElementById('editTitleGroup').style.display = 'block';
+            document.getElementById('editTitle').value = title;
+            document.getElementById('editHospitalGroup').style.display = 'block';
+            document.getElementById('editHospital').value = hospital;
+            document.getElementById('editSpecialtyGroup').style.display = 'block';
+            document.getElementById('editSpecialty').value = specialty;
+        } else {
+            document.getElementById('editDepartmentGroup').style.display = 'none';
+            document.getElementById('editDepartment').value = '';
+            document.getElementById('editTitleGroup').style.display = 'none';
+            document.getElementById('editTitle').value = '';
+            document.getElementById('editHospitalGroup').style.display = 'none';
+            document.getElementById('editHospital').value = '';
+            document.getElementById('editSpecialtyGroup').style.display = 'none';
+            document.getElementById('editSpecialty').value = '';
+        }
+
+        const editForm = document.getElementById('editForm');
+        editForm.classList.add('show');
+        editForm.style.display = 'block';
+    }
+
+    function hideEditForm() {
+        const editForm = document.getElementById('editForm');
+        editForm.classList.remove('show');
+        setTimeout(() => {
+            editForm.style.display = 'none';
+        }, 300);
+    }
+
+    function updateUser() {
+        const name = document.getElementById('editName').value;
+        const age = parseInt(document.getElementById('editAge').value);
+        const gender = document.getElementById('editGender').value;
+        const address = document.getElementById('editAddress').value;
+        const contact = document.getElementById('editContact').value;
+        const department = document.getElementById('editDepartment').value;
+        const title = document.getElementById('editTitle').value;
+        const hospital = document.getElementById('editHospital').value;
+        const specialty = document.getElementById('editSpecialty').value;
+
+        const data = {name, age, gender, address, contact};
+        if (editUserRole === 'doctor') {
+            data.department = department;
+            data.title = title;
+            data.hospital = hospital;
+            data.specialty = specialty;
+        }
+        fetch(`/api/users/update/${editUserRole}/${editUserId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.ok) {
+                alert('更新成功');
+                location.reload();
+            } else {
+                alert('更新失败');
+            }
+        });
+    }
+
+    function logout() {
+        window.location.href = 'login.html';
+    }
+
+    // 获取待审批的患者
+    fetch('/api/users/pending/patients')
+        .then(response => response.json())
+        .then(data => {
+            const pendingPatients = document.getElementById('pendingPatients');
+            data.forEach(patient => {
+                const li = document.createElement('li');
+                li.textContent = `姓名: ${patient.name}, 身份证号: ${patient.idCard}`;
+                const approveButton = document.createElement('button');
+                approveButton.textContent = '审批通过';
+                approveButton.onclick = () => approveUser('patient', patient.id);
+                li.appendChild(approveButton);
+                pendingPatients.appendChild(li);
+            });
+        });
+
+    // 获取待审批的医生
+    fetch('/api/users/pending/doctors')
+        .then(response => response.json())
+        .then(data => {
+            const pendingDoctors = document.getElementById('pendingDoctors');
+            data.forEach(doctor => {
+                const li = document.createElement('li');
+                li.textContent = `姓名: ${doctor.name}, 身份证号: ${doctor.idCard}`;
+                const approveButton = document.createElement('button');
+                approveButton.textContent = '审批通过';
+                approveButton.onclick = () => approveUser('doctor', doctor.id);
+                li.appendChild(approveButton);
+                pendingDoctors.appendChild(li);
+            });
+        });
+
+    // 获取待审批的管理员
+    fetch('/api/users/pending/admins')
+        .then(response => response.json())
+        .then(data => {
+            const pendingAdmins = document.getElementById('pendingAdmins');
+            data.forEach(admin => {
+                const li = document.createElement('li');
+                li.textContent = `姓名: ${admin.name}, 身份证号: ${admin.idCard}`;
+                const approveButton = document.createElement('button');
+                approveButton.textContent = '审批通过';
+                approveButton.onclick = () => approveUser('admin', admin.id);
+                li.appendChild(approveButton);
+                pendingAdmins.appendChild(li);
+            });
+        });
+
+    // 获取已审批的患者
+    fetch('/api/users/patients')
+        .then(response => response.json())
+        .then(data => {
+            const approvedPatients = document.getElementById('approvedPatients');
+            data.forEach(patient => {
+                const li = document.createElement('li');
+                li.textContent = `姓名: ${patient.name}, 身份证号: ${patient.idCard}`;
+                const editButton = document.createElement('button');
+                editButton.textContent = '编辑';
+                editButton.onclick = () => editUser('patient', patient.id, patient.name, patient.age, patient.gender, patient.address, patient.contact);
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = '删除';
+                deleteButton.onclick = () => deleteUser('patient', patient.id);
+                li.appendChild(editButton);
+                li.appendChild(deleteButton);
+                approvedPatients.appendChild(li);
+            });
+        });
+
+    // 获取已审批的医生
+    fetch('/api/users/doctors')
+        .then(response => response.json())
+        .then(data => {
+            const approvedDoctors = document.getElementById('approvedDoctors');
+            data.forEach(doctor => {
+                const li = document.createElement('li');
+                li.textContent = `姓名: ${doctor.name}, 身份证号: ${doctor.idCard}`;
+                const editButton = document.createElement('button');
+                editButton.textContent = '编辑';
+                editButton.onclick = () => editUser('doctor', doctor.id, doctor.name, doctor.age, doctor.gender, doctor.address, doctor.contact, doctor.department, doctor.title, doctor.hospital, doctor.specialty);
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = '删除';
+                deleteButton.onclick = () => deleteUser('doctor', doctor.id);
+                li.appendChild(editButton);
+                li.appendChild(deleteButton);
+                approvedDoctors.appendChild(li);
+            });
+        });
+
+    // 获取已审批的管理员
+    fetch('/api/users/admins')
+        .then(response => response.json())
+        .then(data => {
+            const approvedAdmins = document.getElementById('approvedAdmins');
+            data.forEach(admin => {
+                const li = document.createElement('li');
+                li.textContent = `姓名: ${admin.name}, 身份证号: ${admin.idCard}`;
+                const editButton = document.createElement('button');
+                editButton.textContent = '编辑';
+                editButton.onclick = () => editUser('admin', admin.id, admin.name, null, null, admin.address, admin.contact);
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = '删除';
+                deleteButton.onclick = () => deleteUser('admin', admin.id);
+                li.appendChild(editButton);
+                li.appendChild(deleteButton);
+                approvedAdmins.appendChild(li);
+            });
+        });
+
+    loadPendingVisits();
+    loadPendingAuctionVisits();
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+2024-06-09 19:40:27 - Operation: DELETE, Operated by: 11, Operated on: patient, Target ID: 4
+2024-06-09 20:10:24 - Operation: UPDATE, Operated by: admin, Operated on: patient, Target ID: 2
+2024-06-09 20:10:36 - Operation: UPDATE, Operated by: admin, Operated on: doctor, Target ID: 1
+2024-06-09 22:24:08 - Operation: UPDATE, Operated by: admin, Operated on: doctor, Target ID: 1
+2024-06-09 22:24:43 - Operation: DELETE, Operated by: 11, Operated on: admin, Target ID: 3
+2024-06-09 22:27:50 - Operation: UPDATE, Operated by: admin, Operated on: admin, Target ID: 2
+2024-06-24 18:58:10 - Operation: UPDATE, Operated by: admin, Operated on: doctor, Target ID: 1
+2024-06-24 19:00:34 - Operation: DELETE, Operated by: admin, Operated on: doctor, Target ID: 2
+2024-06-24 19:01:01 - Operation: DELETE, Operated by: admin, Operated on: patient, Target ID: 21
+2024-06-24 19:01:08 - Operation: DELETE, Operated by: admin, Operated on: doctor, Target ID: 21
+2024-07-02 14:10:05 - Operation: UPDATE, Operated by: admin, Operated on: patient, Target ID: 51

@@ -1,0 +1,210 @@
+/* 优化整体界面样式 */
+/* 优化整体界面样式 */
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(to right, #e0eafc, #cfdef3);
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    min-height: 100vh;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+}
+
+.sidebar {
+    background: #2c3e50;
+    padding: 20px;
+    width: 250px;
+    min-height: 100vh;
+}
+
+.sidebar h2 {
+    color: #ffffff;
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar ul li button {
+    background: none;
+    border: none;
+    color: #555; /* 设置默认文本颜色为浅灰色 */
+    cursor: pointer;
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+    font-size: 16px;
+    transition: background 0.3s, color 0.3s;
+}
+
+.sidebar ul li button:hover {
+    background: #34495e;
+    color: #ffffff; /* 悬停时文本颜色变为白色 */
+}
+
+.sidebar ul li .btn-logout {
+    background-color: #e74c3c;
+    color: #ffffff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    font-size: 16px;
+    transition: background 0.3s, color 0.3s;
+}
+
+.sidebar ul li .btn-logout:hover {
+    background-color: #c0392b;
+    color: #ffffff;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    background: #ecf0f1;
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+h1, h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+h1 {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+h2 {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: #ffffff;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+li button {
+    background-color: #2980b9;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 14px;
+}
+
+li button:hover {
+    background-color: #1f639a;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 95%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    border-color: #2980b9;
+}
+
+.btn {
+    display: inline-block;
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    background-color: #2980b9;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #1f639a;
+}
+
+.btn-logout {
+    background-color: #e74c3c;
+    color: #ffffff;
+}
+
+.btn-logout:hover {
+    background-color: #c0392b;
+}
+
+#editForm {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 80%;
+    max-width: 500px;
+    z-index: 1000;
+    transition: transform 0.3s;
+}
+
+#editForm h2 {
+    margin-bottom: 20px;
+}
+
+#editForm.show {
+    transform: translate(-50%, -50%) scale(1);
+}

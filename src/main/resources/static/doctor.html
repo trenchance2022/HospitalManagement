@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医生界面</title>
+    <link rel="stylesheet" href="styles/doctor.css">
+</head>
+<body>
+<div class="container">
+    <div class="sidebar">
+        <h2>医生系统</h2>
+        <ul>
+            <li><button onclick="showSection('userInfo')">用户信息</button></li>
+            <li><button onclick="showSection('updateSelf')">修改个人信息</button></li>
+            <li><button onclick="showSection('createVisit')">发布出诊信息</button></li>
+            <li><button onclick="showSection('createRecurringVisit')">发布周期性出诊信息</button></li>
+            <li><button onclick="showSection('createAuctionVisit')">发布竞拍号源</button></li>
+            <li><button onclick="showSection('manageNormalVisits')">管理普通出诊信息</button></li>
+            <li><button onclick="showSection('manageRecurringVisits')">管理周期性出诊信息</button></li>
+            <li><button onclick="showSection('manageAuctionVisits')">管理竞拍号源</button></li>
+            <li><button onclick="showSection('searchVisits')">查询历史出诊信息</button></li>
+            <li><button onclick="showSection('updateCreditScores')">修改患者信用分</button></li>
+            <li><button class="btn-logout" onclick="logout()">退出登录</button></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div id="userInfo" class="section">
+            <h1>用户信息</h1>
+            <ul id="userInfoList"></ul>
+        </div>
+        <div id="updateSelf" class="section">
+            <h1>修改个人信息</h1>
+            <form id="updateSelfForm">
+                <div class="form-group">
+                    <label for="name">姓名</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="selfDepartment">科室</label>
+                    <input type="text" id="selfDepartment" name="department" required>
+                </div>
+                <div class="form-group">
+                    <label for="title">职称</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="age">年龄</label>
+                    <input type="number" id="age" name="age" required>
+                </div>
+                <div class="form-group">
+                    <label for="gender">性别</label>
+                    <input type="text" id="gender" name="gender" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">住址</label>
+                    <input type="text" id="address" name="address" required>
+                </div>
+                <div class="form-group">
+                    <label for="contact">联系方式</label>
+                    <input type="text" id="contact" name="contact" required>
+                </div>
+                <div class="form-group">
+                    <label for="hospital">所在医院</label>
+                    <input type="text" id="hospital" name="hospital" required>
+                </div>
+                <div class="form-group">
+                    <label for="specialty">专长</label>
+                    <input type="text" id="specialty" name="specialty" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">新密码</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn">更新</button>
+            </form>
+        </div>
+        <div id="createVisit" class="section">
+            <h1>发布出诊信息</h1>
+            <form id="createVisitForm">
+                <div class="form-group">
+                    <label for="department">科室</label>
+                    <input type="text" id="department" name="department" required>
+                </div>
+                <div class="form-group">
+                    <label for="visitTime">出诊时间</label>
+                    <input type="datetime-local" id="visitTime" name="visitTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="availableSlots">可供挂号的数量</label>
+                    <input type="number" id="availableSlots" name="availableSlots" required>
+                </div>
+                <button type="submit" class="btn">发布</button>
+            </form>
+        </div>
+        <div id="createRecurringVisit" class="section">
+            <h1>发布周期性出诊信息</h1>
+            <form id="createRecurringVisitForm">
+                <div class="form-group">
+                    <label for="recurringDepartment">科室</label>
+                    <input type="text" id="recurringDepartment" name="department" required>
+                </div>
+                <div class="form-group">
+                    <label for="dayOfWeek">每周几</label>
+                    <select id="dayOfWeek" name="dayOfWeek" required>
+                        <option value="MONDAY">周一</option>
+                        <option value="TUESDAY">周二</option>
+                        <option value="WEDNESDAY">周三</option>
+                        <option value="THURSDAY">周四</option>
+                        <option value="FRIDAY">周五</option>
+                        <option value="SATURDAY">周六</option>
+                        <option value="SUNDAY">周日</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="recurringVisitTime">出诊时间</label>
+                    <input type="time" id="recurringVisitTime" name="visitTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="recurringAvailableSlots">可供挂号的数量</label>
+                    <input type="number" id="recurringAvailableSlots" name="availableSlots" required>
+                </div>
+                <button type="submit" class="btn">发布</button>
+            </form>
+        </div>
+        <div id="createAuctionVisit" class="section">
+            <h1>发布竞拍号源</h1>
+            <form id="createAuctionVisitForm">
+                <div class="form-group">
+                    <label for="auctionDepartment">科室</label>
+                    <input type="text" id="auctionDepartment" name="department" required>
+                </div>
+                <div class="form-group">
+                    <label for="auctionVisitTime">出诊时间</label>
+                    <input type="datetime-local" id="auctionVisitTime" name="visitTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="auctionAvailableSlots">可供挂号的数量</label>
+                    <input type="number" id="auctionAvailableSlots" name="availableSlots" required>
+                </div>
+                <button type="submit" class="btn">发布</button>
+            </form>
+        </div>
+        <div id="manageNormalVisits" class="section">
+            <h1>管理普通出诊信息</h1>
+            <ul id="normalVisitList"></ul>
+        </div>
+        <div id="manageRecurringVisits" class="section">
+            <h1>管理周期性出诊信息</h1>
+            <ul id="recurringVisitList"></ul>
+        </div>
+        <div id="manageAuctionVisits" class="section">
+            <h1>管理竞拍号源</h1>
+            <ul id="auctionVisitList"></ul>
+        </div>
+        <div id="searchVisits" class="section">
+            <h1>查询历史出诊信息</h1>
+            <form id="searchVisitForm">
+                <div class="form-group">
+                    <label for="startDate">开始日期</label>
+                    <input type="datetime-local" id="startDate" name="startDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="endDate">结束日期</label>
+                    <input type="datetime-local" id="endDate" name="endDate" required>
+                </div>
+                <button type="submit" class="btn">查询</button>
+            </form>
+            <ul id="visitList"></ul>
+        </div>
+        <div id="updateCreditScores" class="section">
+            <h1>修改患者信用分</h1>
+            <ul id="patientList"></ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("updateSelfForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const data = {
+            name: document.getElementById("name").value,
+            department: document.getElementById("selfDepartment").value,
+            title: document.getElementById("title").value,
+            age: parseInt(document.getElementById("age").value),
+            gender: document.getElementById("gender").value,
+            address: document.getElementById("address").value,
+            contact: document.getElementById("contact").value,
+            hospital: document.getElementById("hospital").value,
+            specialty: document.getElementById("specialty").value,
+            password: document.getElementById("password").value
+        };
+        fetch("/api/users/update-self/doctor", {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.ok) {
+                alert('个人信息更新成功');
+            } else {
+                alert('更新失败');
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+
+    document.getElementById("createVisitForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const data = {
+            department: document.getElementById("department").value,
+            visitTime: document.getElementById("visitTime").value,
+            availableSlots: parseInt(document.getElementById("availableSlots").value),
+            status: "PENDING"
+        };
+        fetch("/api/visits/create", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => response.json())
+            .then(data => {
+                alert('出诊信息发布成功，等待审批');
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+
+    document.getElementById("createRecurringVisitForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const data = {
+            department: document.getElementById("recurringDepartment").value,
+            recurringDayOfWeek: document.getElementById("dayOfWeek").value,
+            recurringVisitTime: document.getElementById("recurringVisitTime").value,
+            availableSlots: parseInt(document.getElementById("recurringAvailableSlots").value),
+            recurring: true
+        };
+        fetch("/api/visits/recurring/create", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => response.json())
+            .then(data => {
+                alert('周期性出诊信息发布成功，等待审批');
+                loadRecurringVisits();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+
+    document.getElementById("createAuctionVisitForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const data = {
+            department: document.getElementById("auctionDepartment").value,
+            visitTime: document.getElementById("auctionVisitTime").value,
+            availableSlots: parseInt(document.getElementById("auctionAvailableSlots").value),
+            status: "PENDING",
+            auction: true  // 设置为竞拍号源
+        };
+        fetch("/api/visits/create-auction", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => response.json())
+            .then(data => {
+                alert('竞拍号源发布成功，等待审批');
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+
+    function loadUserInfo() {
+        fetch('/api/users/current')
+            .then(response => response.json())
+            .then(data => {
+                const userInfoList = document.getElementById('userInfoList');
+                userInfoList.innerHTML = `
+                    <li>姓名: ${data.name}</li>
+                    <li>身份证号: ${data.idCard}</li>
+                    <li>科室: ${data.department}</li>
+                    <li>职称: ${data.title}</li>
+                    <li>年龄: ${data.age}</li>
+                    <li>性别: ${data.gender}</li>
+                    <li>住址: ${data.address}</li>
+                    <li>联系方式: ${data.contact}</li>
+                    <li>所在医院: ${data.hospital}</li>
+                    <li>专长: ${data.specialty}</li>
+                    <li>角色：医生</li>
+                `;
+            }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function loadNormalVisits() {
+        fetch("/api/visits/normal")
+            .then(response => response.json())
+            .then(data => {
+                const normalVisitList = document.getElementById("normalVisitList");
+                normalVisitList.innerHTML = '';
+                data.forEach(visit => {
+                    const li = document.createElement('li');
+                    li.textContent = `科室: ${visit.department}, 医生: ${visit.doctorName}, 出诊时间: ${visit.visitTime}, 可供挂号的数量: ${visit.availableSlots}, 患者: ${visit.bookedBy.join(', ')}`;
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = '删除';
+                    deleteButton.onclick = () => deleteVisit(visit.id);
+                    li.appendChild(deleteButton);
+                    normalVisitList.appendChild(li);
+                });
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+
+    function loadRecurringVisits() {
+        fetch("/api/visits/recurring")
+            .then(response => response.json())
+            .then(data => {
+                const recurringVisitList = document.getElementById("recurringVisitList");
+                recurringVisitList.innerHTML = '';
+                data.forEach(visit => {
+                    const li = document.createElement('li');
+                    li.textContent = `科室: ${visit.department}, 每周: ${visit.recurringDayOfWeek}, 时间: ${visit.recurringVisitTime}, 可供挂号的数量: ${visit.availableSlots}`;
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = '删除';
+                    deleteButton.onclick = () => deleteRecurringVisit(visit.id);
+                    li.appendChild(deleteButton);
+                    recurringVisitList.appendChild(li);
+                });
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+
+    function deleteRecurringVisit(id) {
+        fetch(`/api/visits/recurring/delete/${id}`, {
+            method: 'DELETE'
+        }).then(response => {
+            if (response.ok) {
+                alert('删除成功');
+                loadRecurringVisits();
+            } else {
+                alert('删除失败');
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    document.getElementById("searchVisitForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+        fetch(`/api/visits/doctor?startDate=${startDate}&endDate=${endDate}`)
+            .then(response => response.json())
+            .then(data => {
+                const visitList = document.getElementById("visitList");
+                visitList.innerHTML = '';
+                if (data.length === 0) {
+                    alert('未查询到该时段出诊信息');
+                } else {
+                    data.forEach(visit => {
+                        const li = document.createElement('li');
+                        li.textContent = `科室: ${visit.department}, 医生: ${visit.doctorName}, 出诊时间: ${visit.visitTime}, 可供挂号的数量: ${visit.availableSlots}, 患者: ${visit.bookedBy.join(', ')}`;
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = '删除';
+                        deleteButton.onclick = () => deleteVisit(visit.id);
+                        li.appendChild(deleteButton);
+                        visitList.appendChild(li);
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+
+    function deleteVisit(id) {
+        fetch(`/api/visits/delete/${id}`, {
+            method: 'DELETE'
+        }).then(response => {
+            if (response.ok) {
+                alert('出诊信息删除成功');
+                location.reload();
+            } else {
+                alert('删除失败');
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function loadPatientList() {
+        fetch('/api/users/patients/booked-by-current-doctor')
+            .then(response => response.json())
+            .then(data => {
+                const patientList = document.getElementById('patientList');
+                patientList.innerHTML = '';
+                data.forEach(patient => {
+                    const li = document.createElement('li');
+                    li.textContent = `姓名: ${patient.name}, 用户名: ${patient.username}, 当前信用分: ${patient.creditScore}`;
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.min = 0;
+                    input.max = 100;
+                    input.value = patient.creditScore;
+                    const button = document.createElement('button');
+                    button.textContent = '修改信用分';
+                    button.onclick = () => updateCreditScore(patient.username, input.value);
+                    li.appendChild(input);
+                    li.appendChild(button);
+                    patientList.appendChild(li);
+                });
+            });
+    }
+
+    function updateCreditScore(username, score) {
+        fetch(`/api/users/update-credit-score`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, score: parseInt(score) })
+        }).then(response => {
+            if (response.ok) {
+                alert('信用分更新成功');
+                loadPatientList();
+            } else {
+                response.text().then(text => alert(`信用分更新失败: ${text}`));
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+            alert('信用分更新失败');
+        });
+    }
+
+    function loadAuctionVisits() {
+        fetch("/api/visits/auction")
+            .then(response => response.json())
+            .then(data => {
+                const auctionVisitList = document.getElementById("auctionVisitList");
+                auctionVisitList.innerHTML = '';
+                data.forEach(visit => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <div class="visit-info">
+                            <span>科室: ${visit.department}</span>
+                            <span>医生: ${visit.doctorName}</span>
+                            <span>出诊时间: ${new Date(visit.visitTime).toLocaleString()}</span>
+                            <span>可供挂号数量: ${visit.availableSlots}</span>
+                            <span>状态: ${visit.status}</span>
+                            <button onclick="deleteAuctionVisit(${visit.id})">删除</button>
+                        </div>
+
+                        <h3>前5名竞价记录:</h3>
+                        <div id="bidList-${visit.id}" class="bid-list"></div>
+                    `;
+                    auctionVisitList.appendChild(li);
+                    loadTopBids(visit.id); // 加载前5名竞价记录
+                });
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+
+
+    function deleteAuctionVisit(id) {
+        fetch(`/api/visits/auction/delete/${id}`, {
+            method: 'DELETE'
+        }).then(response => {
+            if (response.ok) {
+                alert('删除成功');
+                loadAuctionVisits();
+            } else {
+                alert('删除失败');
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function loadTopBids(visitId) {
+        fetch(`/api/bids/top-bids/${visitId}`)
+            .then(response => response.json())
+            .then(data => {
+                const bidList = document.getElementById(`bidList-${visitId}`);
+                bidList.innerHTML = '';
+                data.forEach(bid => {
+                    const bidRecord = document.createElement('div');
+                    bidRecord.className = 'bid-record';
+                    bidRecord.innerHTML = `
+                        <span>患者: ${bid.patientUsername}</span>
+                        <span>竞拍金额: ${bid.bidAmount}</span>
+                        <span>时间: ${new Date(bid.bidTime).toLocaleString()}</span>
+                        <span>信用分: ${bid.creditScore}</span>
+                    `;
+                    bidList.appendChild(bidRecord);
+                });
+            }).catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function showSection(sectionId) {
+        document.querySelectorAll('.section').forEach(section => {
+            section.style.display = 'none';
+        });
+        document.getElementById(sectionId).style.display = 'block';
+    }
+
+    function logout() {
+        window.location.href = 'login.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        showSection('userInfo'); // 默认显示用户信息
+        loadUserInfo();
+        loadRecurringVisits();
+        loadPatientList();
+        loadAuctionVisits();
+        loadNormalVisits();
+    });
+</script>
+</body>
+</html>
